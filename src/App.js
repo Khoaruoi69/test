@@ -1,29 +1,45 @@
-import React, {useState} from 'react';
+import React, { useState } from "react";
 
-
+const course = [
+  { id: 1, name: "khoha " },
+  { id: 2, name: "CSSS" },
+  { id: 3, name: "HTML " },
+];
 
 function App() {
-  const[name, setName]=useState('')
-  const[email,setEmail]=useState('')
+  // tạo một list khi check
+  const [check, setCheck] = useState([]);
 
+  const handleCheck = (id) => {
+    setCheck((prev) => {
+      const ischeck = check.includes(id);
+      if (ischeck) {
+        //unchecked
+        return check.filter((item) => item !== id); // filter dùng để loại bỏ cái id
+      } else {
+        return [...prev, id];
+      }
+    });
+  };
 
-  const handleSubmit =()=>{
+  const handleSubmit = () => {
     //call api
-    console.log({name,email});
-  }
-
+    console.log({ id: check });
+  };
 
   return (
-    <div style={{padding: '10px'}}>
-    <input 
-    value={name} // nhận giá trị nhập vô khi nhấn button submit
-    onChange={e=> setName(e.target.value)}
-    />
-    <input 
-    value={email}
-    onChange={e=>setEmail(e.target.value)} 
-    />
-    <button onClick={handleSubmit}>Submit</button>
+    <div style={{ padding: "10px" }}>
+      {course.map((c) => (
+        <div key={c.id}>
+          <input
+            type="checkbox"
+            checked={check.includes(c.id)} // đưa id vào mảng
+            onChange={() => handleCheck(c.id)}
+          />
+          {c.name}
+        </div>
+      ))}
+      <button onClick={handleSubmit}>Submit</button>
     </div>
   );
 }
