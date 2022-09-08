@@ -1,47 +1,59 @@
 import React, { useState } from "react";
 
-const course = [
-  { id: 1, name: "khoha " },
-  { id: 2, name: "CSSS" },
-  { id: 3, name: "HTML " },
-];
+
 
 function App() {
-  // tạo một list khi check
-  const [check, setCheck] = useState([]);
+// chuyển local storage ra mảng để map 
+const storageJobs = JSON.parse(localStorage.getItem('jobs')); // viết vầy thì bị lặp lại nên viết lại ....
 
-  const handleCheck = (id) => {
-    setCheck((prev) => {
-      const ischeck = check.includes(id);
-      if (ischeck) {
-        //unchecked
-        return check.filter((item) => item !== id); // filter dùng để loại bỏ cái id
-      } else {
-        return [...prev, id];
-      }
-    });
-  };
+console.log(storageJobs);
 
-  const handleSubmit = () => {
-    //call api
-    console.log({ id: check });
-  };
+// tạo job 
+  const [job, setJob]=useState('')
+// list job  
+ // const [jobs,setJobs]=useState(storageJobs?? []) // dùng toán tử nulllist để nếu storageJobs null thì mapp vẫn đọc đc
+// ... viết lại ở đây 
 
+const [jobs,setJobs]= useState(()=>{
+  const storageJobs= JSON.parse(localStorage.getItem('jobs'));
+  console.log(storageJobs);
+  return storageJobs;
+})
+console.log(job);
+
+const handleSubmit=()=>{
+ // setJobs(prev=>[...prev,job])
+
+ // giờ muốn lưu vào local storage
+
+ setJobs(prev=>{
+
+  const newJobs= [...prev,job];
+  // save local storage
+  const jsonJobs= JSON.stringify(newJobs); // chyển qua json để lưu vào local storage
+  localStorage.setItem('jobs',jsonJobs );
+
+  return newJobs;
+
+
+ })
+  setJob('') // trả về null 
+}
   return (
-    <div style={{ padding: "10px" }}>
-      {course.map((c) => (
-        <div key={c.id}>
-          <input
-            type="checkbox"
-            checked={check.includes(c.id)} // đưa id vào mảng
-            onChange={() => handleCheck(c.id)}
-          />
-          {c.name}
-        </div>
-      ))}
-      <button onClick={handleSubmit}>Submit</button>
+    <div style={{ padding: 32}}>
+      <input
+       value={job} 
+       onChange={e=> setJob(e.target.value)}
+      />
+      <button onClick={handleSubmit}> Add</button>
+
+      <ul>
+        {jobs.map((job,index)=>(
+          <li key={index}>{job}</li>
+        ))}
+      </ul>
     </div>
-  );
+  )
 }
 
 export default App;
