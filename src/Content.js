@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useInsertionEffect, useState } from "react";
 
 // Events : add/ remove events listener
 
@@ -35,74 +35,25 @@ import { useEffect, useState } from "react";
 // 1. Callback luôn được gọi sau khi componet mounted
 // 2. clearn function luôn đc gọi trước khi unmounted component
 
-const tabs = ["posts", "comments", "albums"];
+
 
 function Content() {
-  const [title, setTitle] = useState("");
-  const [posts, setPosts] = useState([]);
+  
+    const [countdown, setCountdown] = useState(120);
 
-  const [type, setType] = useState("posts");
-
-  const [showGoToTop, setShowGoToTop] = useState(false);
-
-  //vết trong useEffect để khỏi gọi API lặp lại nhiều a=lần
-  useEffect(() => {
-    document.title = title;
-    fetch(`https://jsonplaceholder.typicode.com/${type}`)
-      .then((res) => res.json())
-      .then((posts) => {
-        setPosts(posts);
-      });
-  }, [type]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-        console.log(window.scrollY);
-      if (window.scrollY >= 200) {
-        //show
-        setShowGoToTop(true);
-      } else {
-        //hide
-        setShowGoToTop(false);
-        //   setShowGoToTop(window.scrollY>=200); // tương đương code if else bên trên
-      }
-    }
-
-
-    window.addEventListener("scroll", handleScroll);
-
-    // clearn function : tránh rò rĩ bộ nhớ
-    return()=>{
-        window.removeEventListener("scroll", handleScroll);
-    }
-  }, [])
-
-  console.log(type);
+    useEffect(() =>{
+        const timerId = setInterval(()=>{
+            setCountdown(prev=>prev -1)
+            console.log('Countdown...')
+          }, 1000)
+          // clearn up dọn dẹp tranhs rò rỉ bộ nhớ
+          return () => clearInterval(timerId)
+    },[])
   return (
-    <div>
-      <input
-        value={title}
-        style={
-          type === tabs ? { color: "white", backgroundColor: "black" } : {}
-        }
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      {tabs.map((tab) => (
-        <button key={tab} onClick={() => setType(tab)}>
-          {tab}{" "}
-        </button>
-      ))}
-      <ul>
-        {posts.map((posts) => (
-          <li key={posts.id}> {posts.title || posts.name}</li>
-        ))}
 
-        {showGoToTop && (
-          <button style={{ position: "fixed", right: 20, bottom: 20 }}>
-            Go to top
-          </button>
-        )}
-      </ul>
+
+    <div>
+        <h1>{countdown}</h1>
     </div>
   );
 }
