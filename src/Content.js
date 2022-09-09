@@ -10,14 +10,14 @@ import { useEffect, useInsertionEffect, useState, useRef, memo } from "react";
  * @returns 
  */
 
-function Content({count}) {
+function Content({count, onIncrease2}) {
 
   console.log("re-render");
 
   return (
     <div>
-    <h1>heloo o o oosd {count}</h1>
-      
+    <h1>heloo o o oosd </h1>
+     <button onClick={ onIncrease2}>Click me 2!</button>
     </div>
   );
 }
