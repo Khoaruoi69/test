@@ -36,33 +36,42 @@ import { useEffect, useInsertionEffect, useState } from "react";
 // 2. clearn function luôn đc gọi trước khi unmounted component
 // 3. Clearn up luôn được gọi trước khi callback được gọi ( trừ lần đầu)
 
+const lesson = [
+  { id: 1, name: "Khóa học F8" },
+  { id: 2, name: "Khóa học onlneissss" },
+  { id: 3, name: "Learn Enghlish in USA" },
+];
 function Content() {
-  const [avart, setAvatar] = useState();
-
-  useEffect(() =>{
-    // clearr upp 
-    return ()=>{
-       avart && URL.revokeObjectURL(avart.preview)
-    }
-  },[avart])
-  const handlePreviewAvatar = (e) => {
-     const file = e.target.files[0]
-
-    file.preview = URL.createObjectURL(file);
-
-    setAvatar(file);
-    console.log(file);
-    
+  const [lessonId, setLessonId] = useState();
+ 
+  const handleComment = ({ detail }) => {
+    console.log(detail);
   };
+
+  useEffect(() => {
+    // dùng để listener function bên componet khác
+    window.addEventListener(`lesson-${lessonId}`, handleComment);
+    // dùng để xóa.... khỏi bị rò rỉ bộ nhớ
+  return()=>{
+    window.removeEventListener(`lesson-${lessonId}`, handleComment);
+  }
+  },[lessonId]);
+
+  
 
   return (
     <div>
-      <input
-        type="file"
-        //mutiple : cho phép chọn nhiều ảnh
-        onChange={handlePreviewAvatar}
-      />
-      {avart && <img src={avart.preview} alt="" width="10%" />}
+      <ul>
+        {lesson.map((lesson) => (
+          <li
+            key={lesson.id}
+            style={{ color: lessonId == lesson.id ? "red" : "#333" }}
+            onClick={() => setLessonId(lesson.id)}
+          >
+            {lesson.name}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
