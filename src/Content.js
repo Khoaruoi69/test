@@ -34,26 +34,35 @@ import { useEffect, useInsertionEffect, useState } from "react";
 
 // 1. Callback luôn được gọi sau khi componet mounted
 // 2. clearn function luôn đc gọi trước khi unmounted component
-
-
+// 3. Clearn up luôn được gọi trước khi callback được gọi ( trừ lần đầu)
 
 function Content() {
-  
-    const [countdown, setCountdown] = useState(120);
+  const [avart, setAvatar] = useState();
 
-    useEffect(() =>{
-        const timerId = setInterval(()=>{
-            setCountdown(prev=>prev -1)
-            console.log('Countdown...')
-          }, 1000)
-          // clearn up dọn dẹp tranhs rò rỉ bộ nhớ
-          return () => clearInterval(timerId)
-    },[])
+  useEffect(() =>{
+    // clearr upp 
+    return ()=>{
+       avart && URL.revokeObjectURL(avart.preview)
+    }
+  },[avart])
+  const handlePreviewAvatar = (e) => {
+     const file = e.target.files[0]
+
+    file.preview = URL.createObjectURL(file);
+
+    setAvatar(file);
+    console.log(file);
+    
+  };
+
   return (
-
-
     <div>
-        <h1>{countdown}</h1>
+      <input
+        type="file"
+        //mutiple : cho phép chọn nhiều ảnh
+        onChange={handlePreviewAvatar}
+      />
+      {avart && <img src={avart.preview} alt="" width="10%" />}
     </div>
   );
 }
