@@ -1,39 +1,24 @@
-import { useEffect, useInsertionEffect, useState, useRef } from "react";
+import { useEffect, useInsertionEffect, useState, useRef, memo } from "react";
+// memo chỉ chạy khi có một thằng components thay đổi, nếu ko có thay đổi gì thì nó giữ nguyên ko thay đổi
+/**
+ * 1. memo() - > higher Order  Components(HOC)
+ * 2. useCallback()
+ * 
+ * // Hooks
+ * Hoc
+ * Render props
+ * @returns 
+ */
 
-function Content() {
+function Content({count}) {
 
-
-  const [count, setCount] = useState(120);
-
-  const timerId = useRef(); // giữ giá trị sau mỗi lần thay đổi
-
-  // thằng prevCount luôn in ra giá trị cũ của thằng timerId vì DOM gọi rồi mới gọi callback 
-  const prevTimerId = useRef();
-  useEffect(() =>{
-    prevTimerId.current = count;
-  },[count])
-
-  const handleStart = () => {
-    // xét trên DOM 1s chạy 1 lần
-    timerId.current = setInterval(() => {
-      setCount((preCount) => preCount - 1);
-    }, 1000);
-  };
-
-  const handleStop = () => {
-    clearInterval(timerId.current);
-  };
-
-  console.log(count, prevTimerId.current);
-  
+  console.log("re-render");
 
   return (
     <div>
+    <h1>heloo o o oosd {count}</h1>
       
-      <h1>{count}</h1>
-      <button onClick={handleStart}>Start</button>
-      <button onClick={handleStop}>Stop</button>
     </div>
   );
 }
-export default Content;
+export default memo(Content);
