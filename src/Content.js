@@ -1,66 +1,52 @@
-import { useEffect, useInsertionEffect, useState, useRef, memo, useMemo } from "react";
-// memo chỉ chạy khi có một thằng components thay đổi, nếu ko có thay đổi gì thì nó giữ nguyên ko thay đổi
+import { useEffect, useInsertionEffect, useState, useRef, memo, useMemo, useReducer } from "react";
+
 /**
- * 1. memo() - > higher Order  Components(HOC)
- * 2. useCallback()
+ * useSate()
+ * 1. initState
+ * 2. Action: up (state + 1)/ down (state -1 )
  * 
- * // Hooks
- * Hoc
- * Render props
- * @returns 
+ * 
+ * useReducer()
+ * 1. initState
+ * 2. Action: up (state + 1)/ down (state -1 )
+ * 3. Reducer: 
+ * 4. dispatch
  */
 
-function Content({count, onIncrease2}) {
+// InitSate
+const initState =0
 
-  const [name,setName] = useState()
-  const [price,setPrice] = useState()
-  const [products,setProducts] = useState([])
+// Action 
 
-  // useRef để đưa con trỏ chuột về ô input
-   const nameRef = useRef()
-
-  const handleSubmit=()=>{
-    setProducts([...products,{
-      name: name,
-      price: +price
-    }])
-    setName('')
-    setPrice('')
-    nameRef.current.focus()
+const UP_ACTION =`up`
+const DOWN_ACTION =`down`
+// reducer
+const reducer = (state,action) =>{
+  switch(action){
+    case UP_ACTION: return  state +1
+    case DOWN_ACTION: return  state -1 
+    default: 
+      throw new Error(`Invalid action ${action}`);
   }
+}
 
-  // When the product changes, the use changes.
-  const total = useMemo(()=>{
-    const results = products.reduce((results, product)=>{
-      console.log('recalculation')
-      return results + product.price;
-    },0)
-    return results;
-  },[products])
+
+function Content() {
+  const [count,dispatch] = useReducer(reducer,initState)
+  // dùng useState
+  const [counts, setCouts] = useState(0)
+
+ 
   return (
     <div style={{padding:'10px 32px'}}>
-      <input 
-        ref={nameRef}
-        value={name}
-        placeholder="Enter name..."
-        onChange={e=>setName(e.target.value)}
-      />
-      <br/>
-      <input 
-        value={price}
-        placeholder="Enter price..."
-        onChange={e=>setPrice(e.target.value)}
-      />
-      <br/>
-      <button onClick={handleSubmit}> Add</button>
-      <br/>
-      Total:{total}
-      <ul>
-        {products.map((product,index)=>(
-          <li key={index}>{product.name} - {product.price}</li>
-        ))}
-      </ul>
-
+      <h1>{count}</h1>
+      <button onClick={()=>dispatch(UP_ACTION)} >Up</button>
+      <button onClick={()=>dispatch(DOWN_ACTION)} >Down</button>
+       <br/>
+       {/* dùng useState */}
+      <h1> {counts}</h1>
+      <button onClick={()=>setCouts(counts+1)} >Up</button>
+      <button onClick={()=>setCouts(counts-1)} >Down</button>
     </div>
   );
 }
