@@ -1,53 +1,122 @@
-import { useEffect, useInsertionEffect, useState, useRef, memo, useMemo, useReducer } from "react";
+import { prettyDOM } from "@testing-library/react";
+import {
+  useEffect,
+  useInsertionEffect,
+  useState,
+  useRef,
+  memo,
+  useMemo,
+  useReducer,
+} from "react";
 
 /**
  * useSate()
  * 1. initState
  * 2. Action: up (state + 1)/ down (state -1 )
- * 
- * 
+ *
+ *
  * useReducer()
  * 1. initState
  * 2. Action: up (state + 1)/ down (state -1 )
- * 3. Reducer: 
+ * 3. Reducer:
  * 4. dispatch
  */
 
-// InitSate
-const initState =0
+// 1. InitState
+const initState = {
+  job: "",
+  jobs: [],
+};
+// 2. Action
+const SET_ACTION = "set_job";
+const ADD_ACTION = "add_job";
+const DELETE_ACTION = "delete_job";
 
-// Action 
+const setjob = (payload) => {
+  return {
+    type: SET_ACTION,
+    payload,
+  };
+};
+const addjob = (payload) => {
+  return {
+    type: ADD_ACTION,
+    payload,
+  };
+};
+const deletejob = (payload) => {
+  return {
+    type: DELETE_ACTION,
+    payload,
+  };
+};
+// 3. reducer
+const reducer = (state, action) => {
+  console.log("Action", action);
+  console.log("Prev state", state);
 
-const UP_ACTION =`up`
-const DOWN_ACTION =`down`
-// reducer
-const reducer = (state,action) =>{
-  switch(action){
-    case UP_ACTION: return  state +1
-    case DOWN_ACTION: return  state -1 
-    default: 
-      throw new Error(`Invalid action ${action}`);
+  let  newState 
+  switch (action.type) {
+    case SET_ACTION:
+      newState ={
+        ...state,
+        job: action.payload
+      }
+      break;
+      case ADD_ACTION:
+        newState ={
+          ...state, // bảo lưu state cái cũ
+          jobs: [...state.jobs, action.payload]
+                // bảo lưu cũ , thêm cái mới 
+        }
+        break;
+
+        case DELETE_ACTION:
+
+          const newjobs = [...state.jobs]
+          newjobs.splice(action.payload, 1)
+
+          newState ={
+            ...state, // bảo lưu state cái cũ
+            jobs: newjobs
+          }
+          break;
+    default:
+      throw new Error("Invalid action type: " + action.type);
   }
-}
 
+  console.log("New state", newState);
+  return newState;
+};
 
 function Content() {
-  const [count,dispatch] = useReducer(reducer,initState)
-  // dùng useState
-  const [counts, setCouts] = useState(0)
+  const [state, dispatch] = useReducer(reducer, initState);
+  const { job, jobs } = state;
 
- 
+  const inputRef = useRef()
+  const handleSubmit = () => {
+    dispatch(addjob(job));
+    dispatch(setjob(''));
+    inputRef.current.focus();
+  };
+
   return (
-    <div style={{padding:'10px 32px'}}>
-      <h1>{count}</h1>
-      <button onClick={()=>dispatch(UP_ACTION)} >Up</button>
-      <button onClick={()=>dispatch(DOWN_ACTION)} >Down</button>
-       <br/>
-       {/* dùng useState */}
-      <h1> {counts}</h1>
-      <button onClick={()=>setCouts(counts+1)} >Up</button>
-      <button onClick={()=>setCouts(counts-1)} >Down</button>
+    <div style={{ padding: "10px 32px" }}>
+      <input
+        ref = {inputRef}
+        value={job}
+        placeholder="Enter todo ...."
+        onChange={(e) => dispatch(setjob(e.target.value))}
+      />
+      <button onClick={handleSubmit}> Add</button>
+      <ul>
+        {jobs.map((job, index) => (
+          <li key={index}>{job} 
+          <span onClick={()=>dispatch(deletejob(index))}>&times;</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
-export default memo(Content)
+export default memo(Content);
