@@ -1,30 +1,44 @@
 
-import Content from"./Content"
-import "./App.css"
-import { useContext } from "react"
-import { ThemeContext } from "./ThemeContext"
-
-
-// Context
-// CompA => compB => compC
-
-
-// Theme Dark / Light 
-
-// 1. create context
-
-// 2. Provider 
-// 3. Consumer
+import {useStore, action} from './store'
+import {useRef} from 'react'
+import { DeleteTodo } from './store/action'
 
 
 function App() {
-  const context = useContext(ThemeContext)
+  const [state,dispatch] = useStore()
+  const {todos, todoInput} = state
+  const inputRef = useRef()
+
+  console.log("todoUnput: ", todoInput)
+
+  const handleAdd = () =>{
+    dispatch(action.AddTodo(todoInput))
+    dispatch(action.setTodoInput(''))
+    inputRef.current.focus()
+  }
+  console.log(todos)
+
+
   return (
+ <div>
+  <input
+  ref = {inputRef}
+   value={todoInput}
+  placeholder="Enter todo ..."
+  onChange={(e) =>{
+    dispatch(action.setTodoInput(e.target.value))
+  }}
   
-    <div style={{ padding: 32}}>
-      <button onClick={context.toggleTheme}>Toggle theme </button>
-      <Content />
-    </div>
+  />
+  <button onClick={handleAdd}> Add</button>
+  <ul>
+    {todos.map((todo, index) => (
+      <li key ={index}> {todo}
+      <span onClick={()=>dispatch(DeleteTodo(index))} >  X </span>
+      </li>
+    ))}
+  </ul>
+ </div>
   )
 }
 
